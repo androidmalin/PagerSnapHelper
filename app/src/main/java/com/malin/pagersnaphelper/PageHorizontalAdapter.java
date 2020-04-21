@@ -17,19 +17,33 @@ import java.util.List;
 
 public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<String> mList;
+    private ArrayList<Bean> mList;
     private LayoutInflater mInflater;
     private Activity mActivity;
+    private List<Bean> mMCheckBoxList = new ArrayList<>();
+    private List<Bean> mSingleCheckBoxList = new ArrayList<>();
 
-    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_ITEM_M_CHECK = 0;
     private static final int TYPE_ITEM_2 = 1;
+    private static final int TYPE_ITEM_SINGLE_CHECK = 2;
 
     public PageHorizontalAdapter(Activity context) {
         mActivity = context;
         mInflater = LayoutInflater.from(context);
+        initData();
     }
 
-    public void addData(List<String> list) {
+    private void initData() {
+        for (int i = 0; i < 100; i++) {
+            Bean bean = new Bean();
+            bean.content = String.valueOf(i);
+            bean.checked = false;
+            mMCheckBoxList.add(bean);
+            mSingleCheckBoxList.add(bean);
+        }
+    }
+
+    public void addData(List<Bean> list) {
         if (mList == null) {
             mList = new ArrayList<>();
         }
@@ -50,7 +64,7 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         this.mIPageItemClickListener = listener;
     }
 
-    public ArrayList<String> getData() {
+    public ArrayList<Bean> getData() {
         if (mList == null) {
             mList = new ArrayList<>();
         }
@@ -59,8 +73,10 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     @Override
     public int getItemViewType(int position) {
-        if (position % 2 == 0) {
-            return TYPE_ITEM;
+        if (position == 0) {
+            return TYPE_ITEM_M_CHECK;
+        } else if (position == 1) {
+            return TYPE_ITEM_SINGLE_CHECK;
         } else {
             return TYPE_ITEM_2;
         }
@@ -69,29 +85,31 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == TYPE_ITEM) {
-            return new ItemViewHolder(mInflater.inflate(R.layout.page_horizontal_item, parent, false));
+        if (viewType == TYPE_ITEM_M_CHECK) {
+            return new ItemMCheckBoxViewHolder(mInflater.inflate(R.layout.page_horizontal_item, parent, false));
         } else if (viewType == TYPE_ITEM_2) {
             return new ItemViewHolder2(mInflater.inflate(R.layout.page_horizontal_item2, parent, false));
+        } else if (viewType == TYPE_ITEM_SINGLE_CHECK) {
+            return new ItemSingleCheckBoxViewHolder(mInflater.inflate(R.layout.page_horizontal_item, parent, false));
         }
-        return new ItemViewHolder(mInflater.inflate(R.layout.page_horizontal_item, parent, false));
+        return new ItemMCheckBoxViewHolder(mInflater.inflate(R.layout.page_horizontal_item, parent, false));
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-        if (holder instanceof ItemViewHolder) {
+        if (holder instanceof ItemMCheckBoxViewHolder) {
 
             //1.get current data
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+            ItemMCheckBoxViewHolder itemMCheckBoxViewHolder = (ItemMCheckBoxViewHolder) holder;
             final int pos = getRealPosition(holder);
-            final String content = mList.get(pos);
+            final Bean bean = mList.get(pos);
 
             //2.set data
-            loadContent(itemViewHolder.rvList);
+            loadMCheckBoxContent(itemMCheckBoxViewHolder.rvList);
 
             //3. listener
-            itemViewHolder.btnPre.setOnClickListener(new View.OnClickListener() {
+            itemMCheckBoxViewHolder.btnPre.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mIPageItemClickListener == null) return;
@@ -99,7 +117,32 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 }
             });
 
-            itemViewHolder.btnNext.setOnClickListener(new View.OnClickListener() {
+            itemMCheckBoxViewHolder.btnNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null) return;
+                    mIPageItemClickListener.itemBtnOnClick(true, pos);
+                }
+            });
+        } else if (holder instanceof ItemSingleCheckBoxViewHolder) {
+
+            //1.get current data
+            ItemSingleCheckBoxViewHolder itemSingleCheckBoxViewHolder = (ItemSingleCheckBoxViewHolder) holder;
+            final int pos = getRealPosition(holder);
+
+            //2.set data
+            loadSingleCheckBoxContent(itemSingleCheckBoxViewHolder.rvList);
+
+            //3. listener
+            itemSingleCheckBoxViewHolder.btnPre.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null) return;
+                    mIPageItemClickListener.itemBtnOnClick(false, pos);
+                }
+            });
+
+            itemSingleCheckBoxViewHolder.btnNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mIPageItemClickListener == null) return;
@@ -110,18 +153,18 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             //1.get current data
             ItemViewHolder2 itemViewHolder = (ItemViewHolder2) holder;
             final int pos = getRealPosition(holder);
-            final String content = mList.get(pos);
+            final Bean bean = mList.get(pos);
 
             //2.set data
-            itemViewHolder.tvNumber.setText(content + ":type2");
+            itemViewHolder.tvNumber.setText(bean.content + ":type2");
             itemViewHolder.tvNumber.setTextColor(Color.parseColor("#00FF00"));
 
             //3. listener
             itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mIPageItemClickListener == null || content == null) return;
-                    mIPageItemClickListener.itemOnClick(content, pos);
+                    if (mIPageItemClickListener == null || bean.content == null) return;
+                    mIPageItemClickListener.itemOnClick(bean.content, pos);
                 }
             });
 
@@ -147,28 +190,55 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return holder.getLayoutPosition();
     }
 
-    private void loadContent(RecyclerView recyclerView) {
+    private VerticalMCheckBoxAdapter verticalMCheckBoxAdapter;
+    private LinearLayoutManager linearLayoutManager;
+
+    private void loadMCheckBoxContent(RecyclerView recyclerView) {
         //1.Adapter
-        VerticalAdapter verticalAdapter = new VerticalAdapter(mActivity);
+        if (verticalMCheckBoxAdapter == null) {
+            verticalMCheckBoxAdapter = new VerticalMCheckBoxAdapter(mActivity);
+        }
 
         //2.layoutManager
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mActivity);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        if (linearLayoutManager == null) {
+            linearLayoutManager = new LinearLayoutManager(mActivity);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        }
+
 
         //2.setLayoutManager
         recyclerView.setLayoutManager(linearLayoutManager);
 
         //3.setAdapter
-        recyclerView.setAdapter(verticalAdapter);
+        recyclerView.setAdapter(verticalMCheckBoxAdapter);
 
-        //4. get data
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            list.add(String.valueOf(i));
+        //set data
+        verticalMCheckBoxAdapter.addData(mMCheckBoxList);
+    }
+
+    private VerticalSingleCheckBoxAdapter singleCheckBoxAdapter;
+    private LinearLayoutManager linearLayoutManagerSingle;
+
+    private void loadSingleCheckBoxContent(RecyclerView recyclerView) {
+        //1.Adapter
+        if (singleCheckBoxAdapter == null) {
+            singleCheckBoxAdapter = new VerticalSingleCheckBoxAdapter(mActivity);
         }
 
-        //6. set data
-        verticalAdapter.addData(list);
+        //2.layoutManager
+        if (linearLayoutManagerSingle == null) {
+            linearLayoutManagerSingle = new LinearLayoutManager(mActivity);
+            linearLayoutManagerSingle.setOrientation(LinearLayoutManager.VERTICAL);
+        }
+
+        //2.setLayoutManager
+        recyclerView.setLayoutManager(linearLayoutManagerSingle);
+
+        //3.setAdapter
+        recyclerView.setAdapter(singleCheckBoxAdapter);
+
+        // set data
+        singleCheckBoxAdapter.addData(mSingleCheckBoxList);
     }
 
     @Override
@@ -176,13 +246,27 @@ public class PageHorizontalAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         return mList == null ? 0 : mList.size();
     }
 
-    private static class ItemViewHolder extends RecyclerView.ViewHolder {
+    private static class ItemMCheckBoxViewHolder extends RecyclerView.ViewHolder {
         private RecyclerView rvList;
         private Button btnPre;
         private Button btnNext;
 
 
-        private ItemViewHolder(View itemView) {
+        private ItemMCheckBoxViewHolder(View itemView) {
+            super(itemView);
+            rvList = itemView.findViewById(R.id.rv_list);
+            btnPre = itemView.findViewById(R.id.btn_pre);
+            btnNext = itemView.findViewById(R.id.btn_next);
+        }
+    }
+
+    private static class ItemSingleCheckBoxViewHolder extends RecyclerView.ViewHolder {
+        private RecyclerView rvList;
+        private Button btnPre;
+        private Button btnNext;
+
+
+        private ItemSingleCheckBoxViewHolder(View itemView) {
             super(itemView);
             rvList = itemView.findViewById(R.id.rv_list);
             btnPre = itemView.findViewById(R.id.btn_pre);

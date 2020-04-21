@@ -18,27 +18,24 @@ import java.util.Map;
 /**
  * RecyclerView CheckBox mu
  */
-public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class VerticalMCheckBoxAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private ArrayList<String> mList;
+    private List<Bean> mList;
     private LayoutInflater mInflater;
     private Activity mActivity;
     private Map<Integer, Boolean> mapCheckBox = new HashMap<>();
 
-    public VerticalAdapter(Activity context) {
+    public VerticalMCheckBoxAdapter(Activity context) {
         mActivity = context;
         mInflater = LayoutInflater.from(context);
     }
 
-    public void addData(List<String> list) {
-        if (mList == null) {
-            mList = new ArrayList<>();
-        }
-        mList.addAll(list);
+    public void addData(List<Bean> list) {
+        mList = list;
         notifyDataSetChanged();
     }
 
-    public ArrayList<String> getData() {
+    public List<Bean> getData() {
         if (mList == null) {
             mList = new ArrayList<>();
         }
@@ -49,7 +46,7 @@ public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemViewHolder(mInflater.inflate(R.layout.vertical_item, parent, false));
+        return new ItemViewHolder(mInflater.inflate(R.layout.vertical_m_checkbox_item, parent, false));
     }
 
     @Override
@@ -59,18 +56,20 @@ public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             //1.get current data
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             final int realPosition = getRealPosition(holder);
-            final String content = mList.get(realPosition);
+            final Bean bean = mList.get(realPosition);
 
             //2.set data
-            loadContent(itemViewHolder.tvItem, content + ":child");
+            loadContent(itemViewHolder.tvItem, bean.content + ":m checkbox");
 
             //3. listener
             itemViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        bean.checked = true;
                         mapCheckBox.put(realPosition, true);
                     } else {
+                        bean.checked = false;
                         mapCheckBox.remove(realPosition);
                     }
                 }

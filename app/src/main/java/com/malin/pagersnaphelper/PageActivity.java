@@ -66,9 +66,12 @@ public class PageActivity extends AppCompatActivity {
         });
 
         //5. get data
-        List<String> list = new ArrayList<>();
+        List<Bean> list = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
-            list.add(i + " page");
+            Bean bean = new Bean();
+            bean.checked = false;
+            bean.content = i + " page";
+            list.add(bean);
         }
 
         //6. set data
