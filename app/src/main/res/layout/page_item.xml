@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:orientation="vertical">
 
-    <Button
+
+    <TextView
+        android:id="@+id/iv_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:onClick="onSkip"
-        android:text="Skip"
-        tools:ignore="HardcodedText" />
-
+        android:textColor="@color/colorPrimary"
+        tools:text="1" />
 </RelativeLayout>
