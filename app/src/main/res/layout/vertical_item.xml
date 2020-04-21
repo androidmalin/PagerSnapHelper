@@ -4,11 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="40dp">
 
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb_checkbox_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tv_content_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="28sp"
-        tools:text="item" />
+        tools:text="A.xxxxxxxxxxxxxxxxxxxx" />
 </LinearLayout>

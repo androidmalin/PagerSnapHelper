@@ -6,17 +6,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-
+/**
+ * RecyclerView CheckBox mu
+ */
 public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<String> mList;
     private LayoutInflater mInflater;
     private Activity mActivity;
+    private Map<Integer, Boolean> mapCheckBox = new HashMap<>();
 
     public VerticalAdapter(Activity context) {
         mActivity = context;
@@ -29,17 +36,6 @@ public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
         mList.addAll(list);
         notifyDataSetChanged();
-    }
-
-    private IPageItemClickListener mIPageItemClickListener;
-
-
-    public interface IPageItemClickListener {
-        void itemOnClick(String content, int position);
-    }
-
-    public void setOnItemClickListener(IPageItemClickListener listener) {
-        this.mIPageItemClickListener = listener;
     }
 
     public ArrayList<String> getData() {
@@ -62,21 +58,29 @@ public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             //1.get current data
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            final int pos = getRealPosition(holder);
-            final String content = mList.get(pos);
+            final int realPosition = getRealPosition(holder);
+            final String content = mList.get(realPosition);
 
             //2.set data
             loadContent(itemViewHolder.tvItem, content + ":child");
 
             //3. listener
-            itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            itemViewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View v) {
-                    if (mIPageItemClickListener == null || content == null) return;
-                    mIPageItemClickListener.itemOnClick(content, pos);
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        mapCheckBox.put(realPosition, true);
+                    } else {
+                        mapCheckBox.remove(realPosition);
+                    }
                 }
             });
 
+            if (mapCheckBox != null && mapCheckBox.containsKey(realPosition)) {
+                itemViewHolder.checkBox.setChecked(true);
+            } else {
+                itemViewHolder.checkBox.setChecked(false);
+            }
         }
     }
 
@@ -95,10 +99,12 @@ public class VerticalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView tvItem;
+        private CheckBox checkBox;
 
         private ItemViewHolder(View itemView) {
             super(itemView);
             tvItem = itemView.findViewById(R.id.tv_content_item);
+            checkBox = itemView.findViewById(R.id.cb_checkbox_item);
         }
     }
 
