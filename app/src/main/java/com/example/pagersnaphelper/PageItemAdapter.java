@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public interface IPageItemClickListener {
         void itemOnClick(String content, int position);
+
+        void itemBtnOnClick(boolean nextPage, int currentPosition);
     }
 
     public void setOnItemClickListener(IPageItemClickListener listener) {
@@ -54,17 +57,39 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ItemViewHolder) {
+
+            //1.get current data
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             final int pos = getRealPosition(holder);
             final String content = mList.get(pos);
-            loadImgCode(itemViewHolder.tvNumber, pos + 1);
+
+            //2.set data
+            loadContent(itemViewHolder.tvNumber, content);
+
+            //3. listener
             itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mIPageItemClickListener == null || content == null) return;
                     mIPageItemClickListener.itemOnClick(content, pos);
+                }
+            });
+
+            itemViewHolder.btnPre.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null) return;
+                    mIPageItemClickListener.itemBtnOnClick(false, pos);
+                }
+            });
+
+            itemViewHolder.btnNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null) return;
+                    mIPageItemClickListener.itemBtnOnClick(true, pos);
                 }
             });
         }
@@ -74,8 +99,8 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return holder.getLayoutPosition();
     }
 
-    private void loadImgCode(TextView textView, int position) {
-        textView.setText(String.valueOf(position));
+    private void loadContent(TextView textView, String content) {
+        textView.setText(content);
     }
 
     @Override
@@ -85,10 +110,15 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private static class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView tvNumber;
+        private Button btnPre;
+        private Button btnNext;
+
 
         private ItemViewHolder(View itemView) {
             super(itemView);
-            tvNumber = itemView.findViewById(R.id.iv_item);
+            tvNumber = itemView.findViewById(R.id.tv_content);
+            btnPre = itemView.findViewById(R.id.btn_pre);
+            btnNext = itemView.findViewById(R.id.btn_next);
         }
     }
 
@@ -99,13 +129,6 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-
-    public void destroyData() {
-        if (mList != null) {
-            mList.clear();
-            mList = null;
-        }
-    }
 
     public int getDataSize() {
         return mList == null ? 0 : mList.size();

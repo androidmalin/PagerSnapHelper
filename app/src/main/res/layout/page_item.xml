@@ -6,11 +6,29 @@
     android:orientation="vertical">
 
 
-    <TextView
-        android:id="@+id/iv_item"
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textColor="@color/colorPrimary"
         tools:text="1" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:text="pre"
+        tools:ignore="HardcodedText,RtlHardcoded" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="next"
+        tools:ignore="HardcodedText,RtlHardcoded" />
 </RelativeLayout>
