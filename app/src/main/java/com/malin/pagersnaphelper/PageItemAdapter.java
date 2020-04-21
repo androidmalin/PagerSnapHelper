@@ -1,6 +1,7 @@
 package com.malin.pagersnaphelper;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +18,9 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private ArrayList<String> mList;
     private LayoutInflater mInflater;
+
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_ITEM_2 = 1;
 
     public PageItemAdapter(Activity context) {
         mInflater = LayoutInflater.from(context);
@@ -51,9 +55,23 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if (position % 2 == 0) {
+            return TYPE_ITEM;
+        } else {
+            return TYPE_ITEM_2;
+        }
+    }
+
+    @NonNull
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.page_item, parent, false);
-        return new ItemViewHolder(view);
+        if (viewType == TYPE_ITEM) {
+            return new ItemViewHolder(mInflater.inflate(R.layout.page_item, parent, false));
+        } else if (viewType == TYPE_ITEM_2) {
+            return new ItemViewHolder2(mInflater.inflate(R.layout.page_item2, parent, false));
+        }
+        return new ItemViewHolder(mInflater.inflate(R.layout.page_item, parent, false));
     }
 
     @Override
@@ -66,7 +84,42 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final String content = mList.get(pos);
 
             //2.set data
-            loadContent(itemViewHolder.tvNumber, content);
+            loadContent(itemViewHolder.tvNumber, content + ":type1");
+            itemViewHolder.tvNumber.setTextColor(Color.parseColor("#FF0000"));
+
+            //3. listener
+            itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null || content == null) return;
+                    mIPageItemClickListener.itemOnClick(content, pos);
+                }
+            });
+
+            itemViewHolder.btnPre.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null) return;
+                    mIPageItemClickListener.itemBtnOnClick(false, pos);
+                }
+            });
+
+            itemViewHolder.btnNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mIPageItemClickListener == null) return;
+                    mIPageItemClickListener.itemBtnOnClick(true, pos);
+                }
+            });
+        } else if (holder instanceof ItemViewHolder2) {
+            //1.get current data
+            ItemViewHolder2 itemViewHolder = (ItemViewHolder2) holder;
+            final int pos = getRealPosition(holder);
+            final String content = mList.get(pos);
+
+            //2.set data
+            loadContent(itemViewHolder.tvNumber, content + ":type2");
+            itemViewHolder.tvNumber.setTextColor(Color.parseColor("#00FF00"));
 
             //3. listener
             itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +172,20 @@ public class PageItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvNumber = itemView.findViewById(R.id.tv_content);
             btnPre = itemView.findViewById(R.id.btn_pre);
             btnNext = itemView.findViewById(R.id.btn_next);
+        }
+    }
+
+    private static class ItemViewHolder2 extends RecyclerView.ViewHolder {
+        private TextView tvNumber;
+        private Button btnPre;
+        private Button btnNext;
+
+
+        private ItemViewHolder2(View itemView) {
+            super(itemView);
+            tvNumber = itemView.findViewById(R.id.tv_content2);
+            btnPre = itemView.findViewById(R.id.btn_pre2);
+            btnNext = itemView.findViewById(R.id.btn_next2);
         }
     }
 

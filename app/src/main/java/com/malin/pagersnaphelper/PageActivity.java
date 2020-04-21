@@ -67,7 +67,7 @@ public class PageActivity extends AppCompatActivity {
 
         //5. get data
         List<String> list = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 6; i++) {
             list.add(i + " page");
         }
 
