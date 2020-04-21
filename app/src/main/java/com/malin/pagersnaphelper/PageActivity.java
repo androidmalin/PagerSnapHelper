@@ -14,7 +14,7 @@ import java.util.List;
 public class PageActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    private PageItemAdapter mPageItemAdapter;
+    private PageHorizontalAdapter mPageHorizontalAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class PageActivity extends AppCompatActivity {
 
     private void initData() {
         //1.pageLayoutManager
-        PageLinearLayoutManager pageLayoutManager = new PageLinearLayoutManager(this);
+        PageHorizontalLayoutManager pageLayoutManager = new PageHorizontalLayoutManager(this);
         pageLayoutManager.setScrollEnabled(false);
         pageLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 
@@ -34,11 +34,11 @@ public class PageActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(pageLayoutManager);
 
         //3.setAdapter
-        mPageItemAdapter = new PageItemAdapter(this);
-        mRecyclerView.setAdapter(mPageItemAdapter);
+        mPageHorizontalAdapter = new PageHorizontalAdapter(this);
+        mRecyclerView.setAdapter(mPageHorizontalAdapter);
 
         //4.set ClickListener
-        mPageItemAdapter.setOnItemClickListener(new PageItemAdapter.IPageItemClickListener() {
+        mPageHorizontalAdapter.setOnItemClickListener(new PageHorizontalAdapter.IPageItemClickListener() {
             @Override
             public void itemOnClick(String content, int position) {
                 Toast.makeText(PageActivity.this, "" + content, Toast.LENGTH_SHORT).show();
@@ -52,11 +52,11 @@ public class PageActivity extends AppCompatActivity {
                 } else {
                     changedPosition = currentPosition - 1;
                 }
-                if (changedPosition >= 0 && changedPosition < mPageItemAdapter.getDataSize()) {
+                if (changedPosition >= 0 && changedPosition < mPageHorizontalAdapter.getDataSize()) {
                     mRecyclerView.scrollToPosition(changedPosition);
                 }
 
-                if (changedPosition == mPageItemAdapter.getDataSize() - 1) {
+                if (changedPosition == mPageHorizontalAdapter.getDataSize() - 1) {
                     Toast.makeText(PageActivity.this, "last page", Toast.LENGTH_SHORT).show();
                 }
                 if (changedPosition == 0) {
@@ -72,7 +72,7 @@ public class PageActivity extends AppCompatActivity {
         }
 
         //6. set data
-        mPageItemAdapter.addData(list);
+        mPageHorizontalAdapter.addData(list);
     }
 
     private void initView() {

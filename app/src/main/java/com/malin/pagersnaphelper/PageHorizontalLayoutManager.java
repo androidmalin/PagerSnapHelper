@@ -4,11 +4,11 @@ import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 
 
-public class PageLinearLayoutManager extends LinearLayoutManager {
+public class PageHorizontalLayoutManager extends LinearLayoutManager {
 
     private boolean isScrollEnabled = true;
 
-    public PageLinearLayoutManager(Context context) {
+    public PageHorizontalLayoutManager(Context context) {
         super(context);
     }
 
