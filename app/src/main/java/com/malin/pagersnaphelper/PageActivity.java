@@ -1,4 +1,4 @@
-package com.example.pagersnaphelper;
+package com.malin.pagersnaphelper;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

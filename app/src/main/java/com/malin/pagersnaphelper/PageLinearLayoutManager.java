@@ -1,4 +1,4 @@
-package com.example.pagersnaphelper;
+package com.malin.pagersnaphelper;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
